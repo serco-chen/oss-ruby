@@ -20,7 +20,15 @@ module OSS
                    :put_bucket_lifecycle,
                    :get_bucket,
                    :get_bucket_acl,
-                   :get_bucket_location
+                   :get_bucket_location,
+                   :get_bucket_logging,
+                   :get_bucket_website,
+                   :get_bucket_referer,
+                   :get_bucket_lifecycle,
+                   :delete_bucket,
+                   :delete_bucket_logging,
+                   :delete_bucket_website,
+                   :delete_bucket_lifecycle
 
     private
 
