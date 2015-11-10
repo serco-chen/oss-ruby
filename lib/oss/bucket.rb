@@ -98,7 +98,7 @@ module OSS
     end
 
     # status: Enabled, Disabled
-    def put_bucket_lifecycle(name, rules=[])
+    def put_bucket_lifecycle(name, rules = [])
       body = '<?xml version="1.0" encoding="UTF-8"?><LifecycleConfiguration>'
       rules.each do |rule|
         rule_content = '<Rule>'
@@ -123,6 +123,19 @@ module OSS
 
       setup_bucket_options(name, 'lifecycle')
       client.run :put, '?lifecycle', body, headers
+    end
+
+    # params keys: prefix, marker, delimiter, max-keys, encoding-type
+    def get_bucket(name, params = {})
+      setup_bucket_options(name)
+      client.run :get, '/', params
+    end
+
+    [:acl, :location, :logging, :website, :referer, :lifecycle].each do |sub_resource|
+      define_method("get_bucket_#{sub_resource}".to_sym) do |name|
+        setup_bucket_options(name, sub_resource)
+        client.run :get, '/', {"#{sub_resource}" => nil}
+      end
     end
 
     private

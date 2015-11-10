@@ -57,10 +57,9 @@ module OSS
       canonicalized_resource = options[:resource] ? options[:resource] : '/'
       if options[:sub_resource]
         options[:sub_resource] = [options[:sub_resource]] unless options[:sub_resource].is_a?(Array)
-        canonicalized_resource += "?#{options[:sub_resource].sort.join('&')}"
+        canonicalized_resource += "?#{options[:sub_resource].map(&:to_s).sort.join('&')}"
       end
       data.push canonicalized_resource
-
       "OSS " + config.access_key_id + ":" + sign(data.join("\n"))
     end
 

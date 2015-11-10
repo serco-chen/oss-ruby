@@ -17,7 +17,10 @@ module OSS
                    :put_bucket_logging,
                    :put_bucket_website,
                    :put_bucket_referer,
-                   :put_bucket_lifecycle
+                   :put_bucket_lifecycle,
+                   :get_bucket,
+                   :get_bucket_acl,
+                   :get_bucket_location
 
     private
 
