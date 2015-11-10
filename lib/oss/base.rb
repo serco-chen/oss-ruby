@@ -10,7 +10,8 @@ module OSS
       )
     end
 
-    def_delegators :bucket, :get_service, :put_bucket, :put_bucket_acl
+    def_delegators :bucket, :get_service, :put_bucket, :put_bucket_acl,
+      :put_bucket_logging
 
     private
 

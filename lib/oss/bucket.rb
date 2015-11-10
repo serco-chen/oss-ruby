@@ -25,11 +25,26 @@ module OSS
 
     # permission: public-read-write，public-read, private
     def put_bucket_acl(name, permission)
-      setup_bucket_options(name, '?acl')
+      setup_bucket_options(name, 'acl')
       headers = {
         'x-oss-acl' => permission
       }
-      client.run :put, '/?acl', nil, headers
+      client.run :put, '?acl', nil, headers
+    end
+
+    def put_bucket_logging(source, target=nil, prefix=nil)
+      body = '<?xml version="1.0" encoding="UTF-8"?><BucketLoggingStatus>'
+      if target
+        body += "<LoggingEnabled><TargetBucket>#{target}</TargetBucket>"
+        body += "<TargetPrefix>#{prefix}</TargetPrefix>" if prefix
+        body += '</LoggingEnabled>'
+      end
+      body += '</BucketLoggingStatus>'
+      headers = {
+        'Content-Type' => 'application/xml'
+      }
+      setup_bucket_options(source, 'logging')
+      client.run :put, '?logging', body, headers
     end
 
     private
@@ -38,10 +53,11 @@ module OSS
       OSS::Client.new(@config, @options)
     end
 
-    def setup_bucket_options(name, sub_query=nil)
+    def setup_bucket_options(name, sub_resource = nil)
       @options = {
         subdomain: name,
-        resource: "/#{name}/#{sub_query}"
+        resource: "/#{name}/",
+        sub_resource: sub_resource
       }
     end
   end

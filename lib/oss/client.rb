@@ -10,7 +10,7 @@ module OSS
       @options = options
     end
 
-    def run(verb, url='/', params = {}, headers = {})
+    def run(verb, url, params = {}, headers = {})
       headers['Date'] = Time.now.httpdate
       if !headers['Content-Type'] && verb == :put
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
@@ -40,15 +40,27 @@ module OSS
         verb.to_s.upcase,
         headers['Content-Md5'],
         headers['Content-Type'],
-        headers['Date'],
-        options[:resource] || '/'
+        headers['Date']
       ]
+
+      # Calculate OSS Headers
       if headers.keys.any? { |key| key.to_s.downcase.start_with?('x-oss-') }
-        oss_headers = headers.select { |k, _| k.to_s.downcase.start_with?('x-oss-') }.map do |k, v|
-          k.to_s.downcase.strip + ':' + v.strip
-        end
-        data[-1, 0] = oss_headers.join('\n')
+        oss_headers = headers
+          .select { |k, _| k.to_s.downcase.start_with?('x-oss-') }
+          .map { |k, v| k.to_s.downcase.strip + ':' + v.strip }
+          .sort
+          .join('\n')
+        data.push oss_headers
       end
+
+      # Calculate Canonicalized Resource
+      canonicalized_resource = options[:resource] ? options[:resource] : '/'
+      if options[:sub_resource]
+        options[:sub_resource] = [options[:sub_resource]] unless options[:sub_resource].is_a?(Array)
+        canonicalized_resource += "?#{options[:sub_resource].sort.join('&')}"
+      end
+      data.push canonicalized_resource
+
       "OSS " + config.access_key_id + ":" + sign(data.join("\n"))
     end
 
