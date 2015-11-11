@@ -13,15 +13,15 @@ module OSS
     def run(verb, url, params = {}, headers = {})
       headers['Date'] = Time.now.httpdate
       if !headers['Content-Type'] && verb == :put
-        headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        headers['Content-Type'] = "application/x-www-form-urlencoded"
       end
       headers['Authorization'] = authorization_string(verb, headers)
       response = connection.send verb do |conn|
         conn.url url
         conn.headers = headers
-        if verb == :get
+        if verb == :get && params
           conn.params = params
-        elsif verb == :put
+        elsif (verb == :put || verb == :post) && params
           conn.body = params
         end
       end
@@ -45,7 +45,7 @@ module OSS
           .select { |k, _| k.to_s.downcase.start_with?('x-oss-') }
           .map { |k, v| k.to_s.downcase.strip + ':' + v.strip }
           .sort
-          .join('\n')
+          .join("\n")
         data.push oss_headers
       end
 
@@ -53,9 +53,11 @@ module OSS
       canonicalized_resource = options[:resource] ? options[:resource] : '/'
       if options[:sub_resource]
         options[:sub_resource] = [options[:sub_resource]] unless options[:sub_resource].is_a?(Array)
-        canonicalized_resource += "?#{options[:sub_resource].map(&:to_s).sort.join('&')}"
+        query = options[:sub_resource].map(&:to_s).sort.join("&")
+        canonicalized_resource += "?#{query}"
       end
       data.push canonicalized_resource
+
       "OSS " + config.access_key_id + ":" + sign(data.join("\n"))
     end
 

@@ -1,10 +1,5 @@
 module OSS
-  class Bucket
-    def initialize(config)
-      @config = config
-      @options = {}
-    end
-
+  class Bucket < Service
     # params keys: prefix, marker, max-keys
     def get_service(params = {})
       client.run :get, '/', params
@@ -19,17 +14,17 @@ module OSS
         'x-oss-acl' => permission,
         'Content-Type' => 'application/xml'
       }
-      setup_bucket_options(name)
-      client.run :put, '/', body, headers
+      options = setup_options(name)
+      client(options).run :put, '/', body, headers
     end
 
     # permission: public-read-write，public-read, private
     def put_bucket_acl(name, permission)
-      setup_bucket_options(name, 'acl')
       headers = {
         'x-oss-acl' => permission
       }
-      client.run :put, '?acl', nil, headers
+      options = setup_options(name, 'acl')
+      client(options).run :put, '?acl', nil, headers
     end
 
     def put_bucket_logging(source, target = nil, prefix = nil)
@@ -44,8 +39,8 @@ module OSS
       headers = {
         'Content-Type' => 'application/xml'
       }
-      setup_bucket_options(source, 'logging')
-      client.run :put, '?logging', body, headers
+      options = setup_options(source, 'logging')
+      client(options).run :put, '?logging', body, headers
     end
 
     def put_bucket_website(name, index, error)
@@ -60,8 +55,8 @@ module OSS
         'Content-Type' => 'application/xml'
       }
 
-      setup_bucket_options(name, 'website')
-      client.run :put, '?website', body, headers
+      options = setup_options(name, 'website')
+      client(options).run :put, '?website', body, headers
     end
 
     def put_bucket_website(name, index, error)
@@ -76,8 +71,8 @@ module OSS
         'Content-Type' => 'application/xml'
       }
 
-      setup_bucket_options(name, 'website')
-      client.run :put, '?website', body, headers
+      options = setup_options(name, 'website')
+      client(options).run :put, '?website', body, headers
     end
 
     def put_bucket_referer(name, allow_empty_referer, referers=[])
@@ -93,8 +88,8 @@ module OSS
         'Content-Type' => 'application/xml'
       }
 
-      setup_bucket_options(name, 'referer')
-      client.run :put, '?referer', body, headers
+      options = setup_options(name, 'referer')
+      client(options).run :put, '?referer', body, headers
     end
 
     # status: Enabled, Disabled
@@ -121,14 +116,14 @@ module OSS
         'Content-Type' => 'application/xml'
       }
 
-      setup_bucket_options(name, 'lifecycle')
-      client.run :put, '?lifecycle', body, headers
+      options = setup_options(name, 'lifecycle')
+      client(options).run :put, '?lifecycle', body, headers
     end
 
     # params keys: prefix, marker, delimiter, max-keys, encoding-type
     def get_bucket(name, params = {})
-      setup_bucket_options(name)
-      client.run :get, '/', params
+      options = setup_options(name)
+      client(options).run :get, '/', params
     end
 
     [:acl, :location, :logging, :website, :referer, :lifecycle].each do |sub_resource|
@@ -138,8 +133,8 @@ module OSS
     end
 
     def delete_bucket(name)
-      setup_bucket_options(name)
-      client.run :delete, '/'
+      options = setup_options(name)
+      client(options).run :delete, '/'
     end
 
     [:logging, :website, :lifecycle].each do |sub_resource|
@@ -151,23 +146,19 @@ module OSS
     private
 
     def delete_bucket_sub_resource(name, sub_resource)
-      setup_bucket_options(name, sub_resource)
-      client.run :delete, "?#{sub_resource}"
+      options = setup_options(name, sub_resource)
+      client(options).run :delete, "?#{sub_resource}"
     end
 
     def get_bucket_sub_resource(name, sub_resource)
-      setup_bucket_options(name, sub_resource)
-      client.run :get, '/', "#{sub_resource}" => nil
+      options = setup_options(name, sub_resource)
+      client(options).run :get, '/', "#{sub_resource}" => nil
     end
 
-    def client
-      OSS::Client.new(@config, @options)
-    end
-
-    def setup_bucket_options(name, sub_resource = nil)
-      @options = {
-        subdomain: name,
-        resource: "/#{name}/",
+    def setup_options(bucket, sub_resource = nil)
+      {
+        subdomain: bucket,
+        resource: "/#{bucket}/",
         sub_resource: sub_resource
       }
     end

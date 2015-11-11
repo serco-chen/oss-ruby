@@ -1,5 +1,6 @@
 // example.rb is used to test api in development
 example.rb
+example/
 
 // OS X specific files
 .DS_Store

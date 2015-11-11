@@ -31,6 +31,7 @@ module OSS
       @error ||= OSS::APIError.new(doc)
     end
 
-    def_delegators :@response, :body, :status
+    def_delegators :@response, :body, :headers, :status
+    def_delegators :doc, :xpath
   end
 end

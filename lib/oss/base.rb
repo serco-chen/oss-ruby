@@ -30,10 +30,28 @@ module OSS
                    :delete_bucket_website,
                    :delete_bucket_lifecycle
 
+    def_delegators :object,
+                   :put_object,
+                   :put_object_from_file,
+                   :copy_object,
+                   :get_object,
+                   :append_object,
+                   :delete_object,
+                   # :delete_multiple_objects,
+                   :head_object,
+                   :get_object_meta,
+                   :put_object_acl,
+                   :get_object_acl,
+                   :post_object
+
     private
 
     def bucket
-      OSS::Bucket.new(config)
+      @bucket ||= OSS::Bucket.new(config)
+    end
+
+    def object
+      @object ||= OSS::Object.new(config)
     end
   end
 end
