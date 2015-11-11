@@ -25,11 +25,7 @@ module OSS
           conn.body = params
         end
       end
-      if response.status.to_s.start_with?('2')
-        OSS::Response.new(response)
-      else
-        OSS::APIError.new(response)
-      end
+      OSS::Response.new(response)
     rescue Faraday::ClientError => e
       raise OSS::HTTPClientError.new(e)
     end

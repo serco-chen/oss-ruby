@@ -22,20 +22,4 @@ module OSS
       end
     end
   end
-
-  # Wrap error responded from server side
-  class APIError < Error
-    attr_reader :body, :status, :code, :request_id, :host_id
-    def initialize(response)
-      doc = Nokogiri::XML(response.body)
-      @body    = response.body
-      @status  = response.status
-      @code    = doc.xpath("//Code").text
-      @message = doc.xpath("//Message").text
-      @request_id = doc.xpath("//RequestId").text
-      @host_id = doc.xpath("//HostId").text
-
-      super(@message)
-    end
-  end
 end
