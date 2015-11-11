@@ -1,5 +1,3 @@
-require 'nokogiri'
-
 module OSS
   class APIError
     attr_reader :code, :message, :request_id, :host_id

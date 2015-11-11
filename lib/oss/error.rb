@@ -1,5 +1,3 @@
-require 'nokogiri'
-
 module OSS
   class Error < StandardError
     def inspect

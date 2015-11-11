@@ -133,8 +133,7 @@ module OSS
 
     [:acl, :location, :logging, :website, :referer, :lifecycle].each do |sub_resource|
       define_method("get_bucket_#{sub_resource}".to_sym) do |name|
-        setup_bucket_options(name, sub_resource)
-        client.run :get, '/', {"#{sub_resource}" => nil}
+        get_bucket_sub_resource(name, sub_resource)
       end
     end
 
@@ -145,12 +144,21 @@ module OSS
 
     [:logging, :website, :lifecycle].each do |sub_resource|
       define_method("delete_bucket_#{sub_resource}".to_sym) do |name|
-        setup_bucket_options(name, sub_resource)
-        client.run :delete, "?#{sub_resource}"
+        delete_bucket_sub_resource(name, sub_resource)
       end
     end
 
     private
+
+    def delete_bucket_sub_resource(name, sub_resource)
+      setup_bucket_options(name, sub_resource)
+      client.run :delete, "?#{sub_resource}"
+    end
+
+    def get_bucket_sub_resource(name, sub_resource)
+      setup_bucket_options(name, sub_resource)
+      client.run :get, '/', "#{sub_resource}" => nil
+    end
 
     def client
       OSS::Client.new(@config, @options)
