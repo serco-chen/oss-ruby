@@ -41,7 +41,14 @@ module OSS
                    :get_object_meta,
                    :put_object_acl,
                    :get_object_acl,
-                   :post_object
+                   :post_object,
+                   :init_multi_upload,
+                   :upload_object_part,
+                   :upload_object_part_copy,
+                   :complete_multi_upload,
+                   :abort_multi_upload,
+                   :list_multi_upload,
+                   :list_object_parts
 
     private
 

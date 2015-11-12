@@ -17,10 +17,10 @@ module OSS
       put_object(bucket, object, body, headers)
     end
 
-    def copy_object(source_bucket, source_name, target_bucket, target_name, headers = {})
-      headers['x-oss-copy-source'] = "/#{source_bucket}/#{source_name}"
-      options = setup_options(target_bucket, target_name)
-      client(options).run :put, target_name, nil, headers
+    def copy_object(source_bucket, source_object, target_bucket, target_object, headers = {})
+      headers['x-oss-copy-source'] = "/#{source_bucket}/#{source_object}"
+      options = setup_options(target_bucket, target_object)
+      client(options).run :put, target_object, nil, headers
     end
 
     def get_object(bucket, object, headers = {})
@@ -75,6 +75,57 @@ module OSS
     def get_object_acl(bucket, object)
       options = setup_options(bucket, object, 'acl')
       client(options).run :get, object, 'acl' => nil
+    end
+
+    def init_multi_upload(bucket, object, headers = {})
+      options = setup_options(bucket, object, 'uploads')
+      client(options).run :post, "#{object}?uploads", nil, headers
+    end
+
+    def upload_object_part(bucket, object, body, upload_id, part = 1)
+      headers = {
+        'Content-Length' => body.length.to_s,
+        'Content-MD5' => OSS::Utils.content_md5_header(body),
+        'Content-Type' => 'binary/octet-stream'
+      }
+      options = setup_options(bucket, object, ["partNumber=#{part}", "uploadId=#{upload_id}"])
+      client(options).run :put, "#{object}?partNumber=#{part}&uploadId=#{upload_id}", body, headers
+    end
+
+    def upload_object_part_copy(source_bucket, source_object, target_bucket, target_object, upload_id, part = 1, headers = {})
+      headers['x-oss-copy-source'] = "/#{source_bucket}/#{source_object}"
+      options = setup_options(target_bucket, target_object, ["partNumber=#{part}", "uploadId=#{upload_id}"])
+      client(options).run :put, "#{target_object}?partNumber=#{part}&uploadId=#{upload_id}", nil, headers
+    end
+
+    def complete_multi_upload(bucket, object, upload_id, parts = [])
+      body = '<?xml version="1.0" encoding="UTF-8"?><CompleteMultipartUpload>'
+      parts.each do |part|
+        body += "<Part><PartNumber>#{part[:part_number]}</PartNumber><ETag>#{part[:etag]}</ETag></Part>"
+      end
+      body += '</CompleteMultipartUpload>'
+
+      headers = {
+        'Content-Type' => 'application/xml'
+      }
+
+      options = setup_options(bucket, object, "uploadId=#{upload_id}")
+      client(options).run :post, "#{object}?uploadId=#{upload_id}", body, headers
+    end
+
+    def abort_multi_upload(bucket, object, upload_id)
+      options = setup_options(bucket, object, "uploadId=#{upload_id}")
+      client(options).run :delete, "#{object}?uploadId=#{upload_id}"
+    end
+
+    def list_multi_upload(bucket, headers = {})
+      options = setup_options(bucket, nil, 'uploads')
+      client(options).run :get, '/', { 'uploads' => nil }, headers
+    end
+
+    def list_object_parts(bucket, object, upload_id, headers = {})
+      options = setup_options(bucket, object, "uploadId=#{upload_id}")
+      client(options).run :get, object, { 'uploadId' => upload_id }, headers
     end
 
     private
