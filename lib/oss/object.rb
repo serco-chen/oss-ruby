@@ -6,7 +6,7 @@ module OSS
       headers['Content-Type'] ||= 'binary/octet-stream'
       headers['Content-Length'] = body.length.to_s
       options = setup_options(bucket, object)
-      client(options).run :put, "/#{object}", body, headers
+      client(options).run :put, object, body, headers
     end
 
     def put_object_from_file(bucket, object, file, headers = {})
@@ -20,24 +20,24 @@ module OSS
     def copy_object(source_bucket, source_name, target_bucket, target_name, headers = {})
       headers['x-oss-copy-source'] = "/#{source_bucket}/#{source_name}"
       options = setup_options(target_bucket, target_name)
-      client(options).run :put, "/#{target_name}", nil, headers
+      client(options).run :put, target_name, nil, headers
     end
 
     def get_object(bucket, object, headers = {})
       options = setup_options(bucket, object)
-      client(options).run :get, "/#{object}", nil, headers
+      client(options).run :get, object, nil, headers
     end
 
     def append_object(bucket, object, body, position = 0, headers = {})
       headers['Content-Type'] ||= 'binary/octet-stream'
       headers['Content-Length'] = body.length.to_s
       options = setup_options(bucket, object, ['append', "position=#{position}"])
-      client(options).run :post, "/#{object}?append&position=#{position}", body, headers
+      client(options).run :post, "#{object}?append&position=#{position}", body, headers
     end
 
     def delete_object(bucket, object)
       options = setup_options(bucket, object)
-      client(options).run :delete, "/#{object}"
+      client(options).run :delete, object
     end
 
     def delete_multiple_objects(bucket, objects, quiet = false)
@@ -56,6 +56,25 @@ module OSS
 
       options = setup_options(bucket, nil, 'delete')
       client(options).run :post, '?delete', body, headers
+    end
+
+    def head_object(bucket, object, headers = {})
+      options = setup_options(bucket, object)
+      client(options).run :head, object, nil, headers
+    end
+
+    # permission: public-read-write，public-read, private
+    def put_object_acl(bucket, object, permission)
+      headers = {
+        'x-oss-object-acl' => permission
+      }
+      options = setup_options(bucket, object, 'acl')
+      client(options).run :put, "#{object}?acl", nil, headers
+    end
+
+    def get_object_acl(bucket, object)
+      options = setup_options(bucket, object, 'acl')
+      client(options).run :get, object, 'acl' => nil
     end
 
     private
