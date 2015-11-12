@@ -7,3 +7,6 @@ example/
 
 // ruby styles guard configuration file
 .rubocop.yml
+
+// dotenv
+.env

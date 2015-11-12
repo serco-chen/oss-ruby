@@ -5,23 +5,6 @@ module OSS
       Hash[hash.map {|k, v| Symbol === k ? [k.to_s, v] : [k, v] }]
     end
 
-    def indifferent_params(args, *names)
-      params = args.pop
-      if params
-        if Hash === params
-          params = indifferent_hash(params)
-        else
-          args.push(params)
-          params = {}
-        end
-        args.zip(names) {|arg, name| params.merge!(name => arg) if arg }
-      else
-        raise ArgumentError, "wrong number of arguments (0 for at least 1)"
-      end
-
-      params
-    end
-
     def content_md5_header(content)
       Digest::MD5.base64digest(content)
     end
