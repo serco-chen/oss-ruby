@@ -22,5 +22,10 @@ module OSS
       params
     end
 
+    def content_md5_header(content)
+      Digest::MD5.base64digest(content)
+    end
+
+    extend self
   end
 end

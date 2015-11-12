@@ -12,7 +12,7 @@ module OSS
 
     def run(verb, url, params = {}, headers = {})
       headers['Date'] = Time.now.httpdate
-      if !headers['Content-Type'] && verb == :put
+      if !headers['Content-Type'] && (verb == :put || verb == :post)
         headers['Content-Type'] = "application/x-www-form-urlencoded"
       end
       headers['Authorization'] = authorization_string(verb, headers)
@@ -34,7 +34,7 @@ module OSS
     def authorization_string(verb, headers)
       data = [
         verb.to_s.upcase,
-        headers['Content-Md5'],
+        headers['Content-MD5'],
         headers['Content-Type'],
         headers['Date']
       ]
@@ -72,7 +72,7 @@ module OSS
       key = config.access_key_secret
       digest = OpenSSL::Digest.new('sha1')
       hmac = OpenSSL::HMAC.digest(digest, key, data)
-      Base64.encode64(hmac)
+      Base64.encode64(hmac).strip
     end
 
     def connection

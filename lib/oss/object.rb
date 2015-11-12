@@ -35,9 +35,32 @@ module OSS
       client(options).run :post, "/#{object}?append&position=#{position}", body, headers
     end
 
+    def delete_object(bucket, object)
+      options = setup_options(bucket, object)
+      client(options).run :delete, "/#{object}"
+    end
+
+    def delete_multiple_objects(bucket, objects, quiet = false)
+      body = '<?xml version="1.0" encoding="UTF-8"?><Delete>' \
+             "<Quiet>#{quiet}</Quiet>"
+      objects.each do |object|
+        body += "<Object><Key>#{object}</Key></Object>"
+      end
+      body += '</Delete>'
+
+      headers = {
+        'Content-Length' => body.length.to_s,
+        'Content-MD5' => OSS::Utils.content_md5_header(body),
+        'Content-Type' => 'application/xml'
+      }
+
+      options = setup_options(bucket, nil, 'delete')
+      client(options).run :post, '?delete', body, headers
+    end
+
     private
 
-    def setup_options(bucket, object, sub_resource = nil)
+    def setup_options(bucket, object = nil, sub_resource = nil)
       {
         subdomain: bucket,
         resource: "/#{bucket}/#{object}",

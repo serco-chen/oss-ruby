@@ -1,12 +1,11 @@
 module OSS
   class Base
-    include OSS::Utils
     extend Forwardable
     attr_reader :config
 
     def initialize(options = {})
       @config = OSS::Config.new(
-        indifferent_hash(options)
+        OSS::Utils.indifferent_hash(options)
       )
     end
 
@@ -37,7 +36,7 @@ module OSS
                    :get_object,
                    :append_object,
                    :delete_object,
-                   # :delete_multiple_objects,
+                   :delete_multiple_objects,
                    :head_object,
                    :get_object_meta,
                    :put_object_acl,
