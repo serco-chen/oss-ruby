@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListPartsResult>
+    <Bucket>oss-ruby-sdk-test-bucket</Bucket>
+    <Key>oss-ruby-sdk-test-object</Key>
+    <UploadId>0004B9894A22E5B1888A1E29F8236E2D</UploadId>
+    <NextPartNumberMarker>5</NextPartNumberMarker>
+    <MaxParts>1000</MaxParts>
+    <IsTruncated>false</IsTruncated>
+    <Part>
+        <PartNumber>1</PartNumber>
+        <LastModified>2012-02-23T07:01:34.000Z</LastModified>
+        <ETag>&quot;3349DC700140D7F86A078484278075A9&quot;</ETag>
+        <Size>6291456</Size>
+    </Part>
+    <Part>
+        <PartNumber>2</PartNumber>
+        <LastModified>2012-02-23T07:01:12.000Z</LastModified>
+        <ETag>&quot;3349DC700140D7F86A078484278075A9&quot;</ETag>
+        <Size>6291456</Size>
+    </Part>
+    <Part>
+        <PartNumber>5</PartNumber>
+        <LastModified>2012-02-23T07:02:03.000Z</LastModified>
+        <ETag>&quot;7265F4D211B56873A381D321F586E4A9&quot;</ETag>
+        <Size>1024</Size>
+    </Part>
+</ListPartsResult>

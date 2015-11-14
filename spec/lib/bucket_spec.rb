@@ -10,13 +10,17 @@ describe "Bucket API" do
       access_key_id: @access_key_id,
       access_key_secret: @access_key_secret
     })
-    @bucket_name = 'oss-ruby-sdk-test'
+    @bucket_name = 'oss-ruby-sdk-test-bucket'
+    @non_exist_bucket = 'non-exist-bucket'
   end
 
   describe "#get_service" do
     before do
       stub_request(:get, @endpoint)
-        .to_return(status: 200, body: File.read('spec/fixtures/get_service.xml'))
+        .to_return(
+          status: 200,
+          body: File.read('spec/fixtures/get_service.xml')
+        )
     end
 
     it "list bucket list" do
@@ -33,7 +37,9 @@ describe "Bucket API" do
       stub_request(:put, "#{@bucket_name}.#{@endpoint}")
         .with(
           headers: {'x-oss-acl' => @permission},
-          body: hash_including(CreateBucketConfiguration: {LocationConstraint: @region})
+          body: hash_including(
+            'CreateBucketConfiguration' => {'LocationConstraint' => @region}
+          )
         )
         .to_return(status: 200)
     end
@@ -48,7 +54,7 @@ describe "Bucket API" do
     before do
       stub_request(:get, "#{@bucket_name}.#{@endpoint}")
         .to_return(status: 200, body: File.read('spec/fixtures/get_bucket.xml'))
-      stub_request(:get, "non-exist-bucket.#{@endpoint}")
+      stub_request(:get, "#{@non_exist_bucket}.#{@endpoint}")
         .to_return(status: 404)
     end
 
@@ -59,7 +65,7 @@ describe "Bucket API" do
     end
 
     it "return NoSuchBucket when bucket does not exist" do
-      response = @oss.get_bucket("non-exist-bucket")
+      response = @oss.get_bucket(@non_exist_bucket)
       expect(response.status).to eq(404)
     end
   end
@@ -68,7 +74,7 @@ describe "Bucket API" do
     before do
       stub_request(:delete, "#{@bucket_name}.#{@endpoint}")
         .to_return(status: 204)
-      stub_request(:delete, "non-exist-bucket.#{@endpoint}")
+      stub_request(:delete, "#{@non_exist_bucket}.#{@endpoint}")
         .to_return(status: 404)
     end
     it "get bucket information" do
@@ -77,7 +83,7 @@ describe "Bucket API" do
     end
 
     it "return NoSuchBucket when bucket does not exist" do
-      response = @oss.delete_bucket("non-exist-bucket")
+      response = @oss.delete_bucket(@non_exist_bucket)
       expect(response.status).to eq(404)
     end
   end
@@ -122,7 +128,11 @@ describe "Bucket API" do
         stub_request(:put, "#{@bucket_name}.#{@endpoint}/?logging")
           .with(
             headers: {'Content-Type' => 'application/xml'},
-            body: hash_including(BucketLoggingStatus: {LoggingEnabled: {TargetBucket: @bucket_name}})
+            body: hash_including(
+              'BucketLoggingStatus' => {
+                'LoggingEnabled' => {'TargetBucket' => @bucket_name}
+              }
+            )
           )
           .to_return(status: 200)
         stub_request(:get, "#{@bucket_name}.#{@endpoint}/?logging")
@@ -153,13 +163,9 @@ describe "Bucket API" do
           .with(
             headers: {'Content-Type' => 'application/xml'},
             body: hash_including(
-              WebsiteConfiguration: {
-                IndexDocument: {
-                  Suffix: 'index.html'
-                },
-                ErrorDocument: {
-                  Key: '400.html'
-                }
+              'WebsiteConfiguration' => {
+                'IndexDocument' => {'Suffix' => 'index.html'},
+                'ErrorDocument' => {'Key' => '400.html'}
               }
             )
           )
@@ -192,9 +198,9 @@ describe "Bucket API" do
           .with(
             headers: {'Content-Type' => 'application/xml'},
             body: hash_including(
-              RefererConfiguration: {
-                AllowEmptyReferer: 'true',
-                RefererList: {Referer: 'http://www.aliyun.com'}
+              'RefererConfiguration' => {
+                'AllowEmptyReferer' => 'true',
+                'RefererList' => {'Referer' => 'http://www.aliyun.com'}
               }
             )
           )
@@ -220,12 +226,12 @@ describe "Bucket API" do
           .with(
             headers: {'Content-Type' => 'application/xml'},
             body: hash_including(
-              LifecycleConfiguration: {
-                Rule: {
-                  ID: 'abc prefix expiration rule',
-                  Prefix: 'abc-',
-                  Status: 'Enabled',
-                  Expiration: {Days: '5'}
+              'LifecycleConfiguration' => {
+                'Rule' => {
+                  'ID' => 'abc prefix expiration rule',
+                  'Prefix' => 'abc-',
+                  'Status' => 'Enabled',
+                  'Expiration' => {'Days' => '5'}
                 }
               }
             )

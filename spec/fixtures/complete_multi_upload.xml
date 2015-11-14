@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompleteMultipartUploadResult>
+  <Location>http://oss-ruby-sdk-test-bucket.oss-cn-hangzhou.aliyuncs.com/oss-ruby-sdk-test-object</Location>
+  <Bucket>oss-ruby-sdk-test-bucket</Bucket>
+  <Key>oss-ruby-sdk-test-object</Key>
+  <ETag>B864DB6A936D376F9F8D3ED3BBE540DD-3</ETag>
+</CompleteMultipartUploadResult>

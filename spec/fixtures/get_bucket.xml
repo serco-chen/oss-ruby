@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ListBucketResult>
-  <Name>oss-ruby-sdk-test</Name>
+  <Name>oss-ruby-sdk-test-bucket</Name>
   <Prefix></Prefix>
   <Marker></Marker>
   <MaxKeys>100</MaxKeys>
