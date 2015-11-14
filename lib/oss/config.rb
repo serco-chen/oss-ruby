@@ -4,7 +4,6 @@ module OSS
     attr_accessor *OPTIONS
 
     def initialize(options={})
-      # TODO: raise error when OPTIONS not valid
       options.each do |key, val|
         self.send("#{key}=", val) if self.respond_to?("#{key}=")
       end

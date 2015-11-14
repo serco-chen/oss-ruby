@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListBucketResult>
+  <Name>oss-ruby-sdk-test</Name>
+  <Prefix></Prefix>
+  <Marker></Marker>
+  <MaxKeys>100</MaxKeys>
+  <Delimiter></Delimiter>
+  <IsTruncated>false</IsTruncated>
+  <Contents>
+    <Key>aaa.data</Key>
+    <LastModified>2015-11-12T09:10:02.000Z</LastModified>
+    <ETag>"4E672110E546ED7595087D10F8397678-2"</ETag>
+    <Type>Multipart</Type>
+    <Size>3384620</Size>
+    <StorageClass>Standard</StorageClass>
+    <Owner>
+      <ID>1306909297023357</ID>
+      <DisplayName>1306909297023357</DisplayName>
+    </Owner>
+  </Contents>
+  <Contents>
+    <Key>abc.pdf</Key>
+    <LastModified>2015-11-12T07:28:23.000Z</LastModified>
+    <ETag>"172F5D31191B965FE8CCB5A0F5BECD9A"</ETag>
+    <Type>Normal</Type>
+    <Size>1692310</Size>
+    <StorageClass>Standard</StorageClass>
+    <Owner>
+      <ID>1306909297023357</ID>
+      <DisplayName>1306909297023357</DisplayName>
+    </Owner>
+  </Contents>
+</ListBucketResult>

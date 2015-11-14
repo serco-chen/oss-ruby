@@ -3,4 +3,4 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in easy_ping.gemspec
 gemspec
 
-gem 'dotenv', '~> 2.0.0'
+gem 'webmock', '~> 1.22.3'

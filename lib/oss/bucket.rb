@@ -75,7 +75,7 @@ module OSS
       client(options).run :put, '?website', body, headers
     end
 
-    def put_bucket_referer(name, allow_empty_referer, referers=[])
+    def put_bucket_referer(name, allow_empty_referer = true, referers=[])
       body = '<?xml version="1.0" encoding="UTF-8"?><RefererConfiguration>' \
              "<AllowEmptyReferer>#{allow_empty_referer}</AllowEmptyReferer >" \
              "<RefererList>"

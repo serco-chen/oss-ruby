@@ -1,4 +1,5 @@
 require 'base64'
+require 'time'
 
 module OSS
   class Client
