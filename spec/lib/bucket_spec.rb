@@ -263,5 +263,62 @@ describe "Bucket API" do
         expect(response.status).to eq(204)
       end
     end
+
+    context "#Cors" do
+      before do
+        stub_request(:put, "#{@bucket_name}.#{@endpoint}/?cors")
+          .with(
+            headers: {'Content-Type' => 'application/xml'},
+            body: hash_including(
+              'CORSConfiguration' => {
+                'CORSRule' => [{
+                  'AllowedOrigin' => '*',
+                  'AllowedMethod' => ['PUT', 'GET'],
+                  'AllowedHeader' => 'Authorization'
+                }, {
+                  'AllowedOrigin' => ['http://www.a.com', 'http://www.b.com'],
+                  'AllowedMethod' => 'GET',
+                  'AllowedHeader' => 'Authorization',
+                  'ExposeHeader' => ['x-oss-test', 'x-oss-test1'],
+                  'MaxAgeSeconds' => '100'
+                }]
+              }
+            )
+          )
+          .to_return(status: 200)
+        stub_request(:get, "#{@bucket_name}.#{@endpoint}/?cors")
+          .to_return(status: 200)
+        stub_request(:delete, "#{@bucket_name}.#{@endpoint}/?cors")
+          .to_return(status: 204)
+      end
+
+      it "modify cors" do
+        response = @oss.put_bucket_cors(
+          @bucket_name,
+          [{
+            'AllowedOrigin' => '*',
+            'AllowedMethod' => ['PUT', 'GET'],
+            'AllowedHeader' => 'Authorization'
+          }, {
+            'AllowedOrigin' => ['http://www.a.com', 'http://www.b.com'],
+            'AllowedMethod' => 'GET',
+            'AllowedHeader' => 'Authorization',
+            'ExposeHeader'  => ['x-oss-test', 'x-oss-test1'],
+            'MaxAgeSeconds' => 100
+          }]
+        )
+        expect(response.status).to eq(200)
+      end
+
+      it "get cors" do
+        response = @oss.get_bucket_cors(@bucket_name)
+        expect(response.status).to eq(200)
+      end
+
+      it "delete cors" do
+        response = @oss.delete_bucket_cors(@bucket_name)
+        expect(response.status).to eq(204)
+      end
+    end
   end
 end

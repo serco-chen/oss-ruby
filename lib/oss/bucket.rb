@@ -39,6 +39,7 @@ module OSS
       headers = {
         'Content-Type' => 'application/xml'
       }
+
       options = setup_options(source, 'logging')
       client(options).run :put, '?logging', body, headers
     end
@@ -157,8 +158,12 @@ module OSS
       end
       body += '</CORSConfiguration>'
 
+      headers = {
+        'Content-Type' => 'application/xml'
+      }
+
       options = setup_options(name, 'cors')
-      client(options).run :put, '?cors', body
+      client(options).run :put, '?cors', body, headers
     end
 
     private
