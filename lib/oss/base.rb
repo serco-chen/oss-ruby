@@ -41,7 +41,6 @@ module OSS
                    :delete_object,
                    :delete_multiple_objects,
                    :head_object,
-                   :get_object_meta,
                    :put_object_acl,
                    :get_object_acl,
                    :post_object,

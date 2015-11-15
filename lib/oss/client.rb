@@ -31,6 +31,8 @@ module OSS
       raise OSS::HTTPClientError.new(e)
     end
 
+    private
+
     # "Authorization: OSS " + Access Key Id + ":" + Signature
     def authorization_string(verb, headers)
       data = [
@@ -41,9 +43,9 @@ module OSS
       ]
 
       # Calculate OSS Headers
-      if headers.keys.any? { |key| key.to_s.downcase.start_with?('x-oss-') }
+      if headers.keys.any? { |key| key.to_s.downcase.start_with?(OSS_HEADER_PREFIX) }
         oss_headers = headers
-          .select { |k, _| k.to_s.downcase.start_with?('x-oss-') }
+          .select { |k, _| k.to_s.downcase.start_with?(OSS_HEADER_PREFIX) }
           .map { |k, v| k.to_s.downcase.strip + ':' + v.strip }
           .sort
           .join("\n")
@@ -53,7 +55,9 @@ module OSS
       # Calculate Canonicalized Resource
       canonicalized_resource = options[:resource] ? options[:resource] : '/'
       if options[:sub_resource]
-        options[:sub_resource] = [options[:sub_resource]] unless options[:sub_resource].is_a?(Array)
+        unless options[:sub_resource].is_a?(Array)
+          options[:sub_resource] = [options[:sub_resource]]
+        end
         query = options[:sub_resource].map(&:to_s).sort.join("&")
         canonicalized_resource += "?#{query}"
       end
@@ -77,7 +81,12 @@ module OSS
     end
 
     def connection
-      endpoint = options[:subdomain] ? "#{options[:subdomain]}.#{config.endpoint}" : config.endpoint
+      endpoint =
+        if options[:subdomain]
+          "#{options[:subdomain]}.#{config.endpoint}"
+        else
+          config.endpoint
+        end
       @connection = Faraday.new(url: 'http://' + endpoint) do |conn|
         conn.request  :url_encoded
         conn.response :logger
