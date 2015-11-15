@@ -126,7 +126,7 @@ module OSS
       client(options).run :get, '/', params
     end
 
-    [:acl, :location, :logging, :website, :referer, :lifecycle].each do |sub_resource|
+    [:acl, :location, :logging, :website, :referer, :lifecycle, :cors].each do |sub_resource|
       define_method("get_bucket_#{sub_resource}".to_sym) do |name|
         get_bucket_sub_resource(name, sub_resource)
       end
@@ -137,13 +137,44 @@ module OSS
       client(options).run :delete, '/'
     end
 
-    [:logging, :website, :lifecycle].each do |sub_resource|
+    [:logging, :website, :lifecycle, :cors].each do |sub_resource|
       define_method("delete_bucket_#{sub_resource}".to_sym) do |name|
         delete_bucket_sub_resource(name, sub_resource)
       end
     end
 
+    def put_bucket_cors(name, rules)
+      body = '<?xml version="1.0" encoding="UTF-8"?><CORSConfiguration>'
+      rules.each do |rule|
+        rule_content = '<CORSRule>'
+        rule_content += cors_rule_content_generator(rule, 'AllowedOrigin')
+        rule_content += cors_rule_content_generator(rule, 'AllowedMethod')
+        rule_content += cors_rule_content_generator(rule, 'AllowedHeader')
+        rule_content += cors_rule_content_generator(rule, 'ExposeHeader')
+        rule_content += cors_rule_content_generator(rule, 'MaxAgeSeconds', false)
+        rule_content += '</CORSRule>'
+        body += rule_content
+      end
+      body += '</CORSConfiguration>'
+
+      options = setup_options(name, 'cors')
+      client(options).run :put, '?cors', body
+    end
+
     private
+
+    def cors_rule_content_generator(rule, key, allow_multi = true)
+      options = rule[key]
+      return '' unless options
+      if allow_multi
+        options = options.is_a?(Array) ? options : [options]
+        options.reduce('') do |content, option|
+          content + "<#{key}>#{option}</#{key}>"
+        end
+      else
+        "<#{key}>#{options}</#{key}>"
+      end
+    end
 
     def delete_bucket_sub_resource(name, sub_resource)
       options = setup_options(name, sub_resource)

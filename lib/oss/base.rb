@@ -27,7 +27,10 @@ module OSS
                    :delete_bucket,
                    :delete_bucket_logging,
                    :delete_bucket_website,
-                   :delete_bucket_lifecycle
+                   :delete_bucket_lifecycle,
+                   :put_bucket_cors,
+                   :get_bucket_cors,
+                   :delete_bucket_cors
 
     def_delegators :object,
                    :put_object,
