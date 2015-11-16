@@ -9,9 +9,9 @@ module OSS
       client(options).run :put, object, body, headers
     end
 
-    def put_object_from_file(bucket, object, file, headers = {})
-      body = File.read(file)
-      if mime_type = MIME::Types.type_for(file).first
+    def put_object_from_file(bucket, object, file_name, headers = {})
+      body = File.read(file_name)
+      if mime_type = MIME::Types.type_for(file_name).first
         headers['Content-Type'] = mime_type.content_type
       end
       put_object(bucket, object, body, headers)
